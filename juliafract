@@ -12,7 +12,7 @@ steps = 500;
     epsilon = 0.01; %convergence detector, useful for other fractals
 
 %fractal generator faster (old was WO lims)
-    parfor k=1:steps+1;
+    for k=1:steps+1;
         
         %Turbo Mode
         if opt 
