@@ -10,7 +10,7 @@
 
 %Options
     global mode;
-    mode = true; %fast mode on
+    mode = false; %fast mode off
     
     global resl; %changes resolution multiplier
     resl = 1;

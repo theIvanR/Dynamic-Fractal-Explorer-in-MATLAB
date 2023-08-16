@@ -9,7 +9,7 @@ z=x+i.*y;
 %% Main Loop (exp)
 high = 1e22; low = 1e-8; %cutoff detectors
 
-%fractal generator faster (old was WO lims)
+%Fractal Generator
     for k=1:iterations+1;
         
         %Turbo Mode
@@ -22,11 +22,15 @@ high = 1e22; low = 1e-8; %cutoff detectors
 
         %Fractal Generator
         z = 1.25 - z.^2;
-        
     end
 
-% Mapping   
-    t=exp(-abs(z)); %negative exponential
+% Mapping function to compress values (z->t)
+    %t=real(z);
+    %t=imag(z);
+
+    %t=exp(-abs(z)); %negative exponential
+    t=1./(abs(z)+1);
+    %t=2*atan(abs(z))/pi;
 
 %% Plotting
     imagesc(X, Y, t);
