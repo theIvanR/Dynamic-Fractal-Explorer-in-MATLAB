@@ -1,4 +1,4 @@
-function juliafract(x_max,x_min,y_min,y_max,res,opt);
+function juliafract(x_max,x_min,y_min,y_max,res,iterations,opt);
 
 X = linspace(x_min,x_max,res);
 Y = linspace(y_min,y_max,res);
@@ -7,12 +7,10 @@ Y = linspace(y_min,y_max,res);
 z=x+i.*y;
 
 %% Main Loop (exp)
-steps = 500;
-    high = 1e32; low = 1e-8; %cutoff detectors
-    epsilon = 0.01; %convergence detector, useful for other fractals
+high = 1e22; low = 1e-8; %cutoff detectors
 
 %fractal generator faster (old was WO lims)
-    for k=1:steps+1;
+    for k=1:iterations+1;
         
         %Turbo Mode
         if opt 
@@ -23,21 +21,31 @@ steps = 500;
         end
 
         %Fractal Generator
-            prev=z;
-            z= 1.25 - z.^2;
+        z = 1.25 - z.^2;
         
-        %Convg Detector
-%         if abs(z-prev) < epsilon
-%             break;
-%         end
     end
 
 % Mapping   
     t=exp(-abs(z)); %negative exponential
 
-imagesc(X, Y, t);
-colormap jet;
-colorbar;
-axis image;
+%% Plotting
+    imagesc(X, Y, t);
+    colormap jet;
+    colorbar;
+    axis image;
+
+%Title
+    titleText = sprintf('Julia Fractal (%d Iterations)', iterations);
+
+    if opt == 0
+        titleText = [titleText, ' (Normal Mode)'];
+    elseif opt == 1
+        titleText = [titleText, ' (Turbo Mode)'];
+    end
+    title(titleText);
+
+%Label
+    xlabel(['X Axis (', num2str(res), ' steps)']);
+    ylabel(['Y Axis (', num2str(res), ' steps)']);
 
 end

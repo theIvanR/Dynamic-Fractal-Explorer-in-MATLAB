@@ -15,10 +15,13 @@
     global resl; %changes resolution multiplier
     resl = 1;
 
-% Generate initial plot
-    juliafract(x_max,x_min,y_min,y_max,res,mode);
+    global iterations; %default iteration count
+    iterations = 100;
 
-% Main Loop
+% Generate initial plot
+    juliafract(x_max,x_min,y_min,y_max,res,iterations,mode);
+
+% Key definitions
 while true
     % Wait for user input
     key = waitforbuttonpress;
@@ -55,14 +58,14 @@ while true
             x_min = x_min - pan_step_size*zoom_level;
             x_max = x_max - pan_step_size*zoom_level;
         
-        elseif key == '-' % Minus key (zoom out)
+        elseif key == '+'|| key == '='  % Plus key (zoom in)
             x_min = x_min - (zoom_factor-1)/2*x_range;
             x_max = x_max + (zoom_factor-1)/2*x_range;
             y_min = y_min - (zoom_factor-1)/2*y_range;
             y_max = y_max + (zoom_factor-1)/2*y_range;
             step_size = step_size * zoom_factor;
         
-        elseif key == '+' || key == '=' % Plus key or equals key (zoom in)
+        elseif key == '-' % Minus key (zoom out)
             x_min = x_min + (zoom_factor-1)/2*x_range;
             x_max = x_max - (zoom_factor-1)/2*x_range;
             y_min = y_min + (zoom_factor-1)/2*y_range;
@@ -79,11 +82,17 @@ while true
         elseif key == 'h'
             mode = ~mode; %toggle it
         
+        %Iterations
+        elseif key == 'z'
+            iterations = floor(2*iterations);
+        elseif key =='x'
+            iterations = floor(iterations/2);
+
         end
         
         % Redraw the plot with the new window size and position
         tic
-            juliafract(x_max,x_min,y_min,y_max,res*resl,mode);
+            juliafract(x_max,x_min,y_min,y_max,res*resl,iterations,mode);
         toc
 
             %step_size %display step size
