@@ -1,27 +1,31 @@
-Title: Dynamic Fractal Explorer in MATLAB
+# Dynamic Fractal Explorer in MATLAB
 
-Description:
-This MATLAB code implements a dynamic fractal explorer that allows users to visualize and interact with various fractal patterns. The explorer is equipped with features to zoom in and out, pan the plot, adjust resolution, switch between different rendering modes, and toggle Lyapunov mode for generating Lyapunov fractals. The code provides a versatile platform for exploring different fractal functions and their visual representations.
+## Description
 
-Features:
+This MATLAB code implements a dynamic fractal explorer that empowers users to visualize and interact with a variety of captivating fractal patterns. The explorer incorporates features for zooming, panning, adjusting resolution, switching rendering modes, and toggling Lyapunov mode to generate mesmerizing Lyapunov fractals. The code offers a versatile platform to delve into different fractal functions and their captivating visual representations.
 
-    Interactive exploration of fractal patterns.
-    Zoom in/out and pan functionality for detailed exploration.
-    Adjustable resolution for fine-tuning visual quality.
-    Turbo mode for faster rendering of standard fractals.
-    Lyapunov mode for generating Lyapunov fractals and calculating their exponents.
+## Features
 
-Usage:
+- Interactive exploration of intricate fractal patterns.
+- Zoom in/out and pan functionality for detailed exploration.
+- Adjustable resolution for fine-tuning visual quality.
+- Turbo mode for expedited rendering of standard fractals.
+- Lyapunov mode for generating Lyapunov fractals and calculating their exponents.
 
-    Set the initial window size and fractal function in the code.
-    Run the script and observe the default fractal pattern.
-    Interact with the plot using keyboard inputs:
-        Arrow keys for panning.
-        "+" and "-" keys for zooming.
-        "q" and "e" keys to toggle resolution.
-        "h" key to toggle HQ (high-quality) mode.
-        "l" key to toggle Lyapunov mode.
-        "z" and "x" keys to adjust iteration count.
-    Watch as the fractal pattern dynamically updates based on user inputs.
+## Usage
 
-This code provides an educational and visually appealing way to explore the fascinating world of fractals. Customize the fractal function and parameters to uncover new and mesmerizing patterns. Happy fractal exploration!
+1. **Set Initial Parameters**: Modify the initial window size and fractal function in the code.
+2. **Run the Script**: Execute the script and observe the default fractal pattern.
+3. **Interact with Plot**: Use keyboard inputs to interact with the plot:
+   - Arrow keys for panning.
+   - "+" and "-" keys for zooming.
+   - "q" and "e" keys to toggle resolution.
+   - "h" key to toggle HQ (high-quality) mode.
+   - "l" key to toggle Lyapunov mode.
+   - "z" and "x" keys to adjust iteration count.
+4. **Dynamic Exploration**: Witness the fractal pattern dynamically update based on user inputs.
+
+Customize the fractal function and parameters to unearth captivating new patterns and embark on a captivating journey into the mesmerizing world of fractals.
+
+Happy fractal exploration!
+
