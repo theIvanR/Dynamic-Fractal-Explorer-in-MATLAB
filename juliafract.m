@@ -1,4 +1,4 @@
-function juliafract(x_max, x_min, y_min, y_max, res, iterations, opt, lyapunov)
+function juliafract(fractalFunction, x_max, x_min, y_min, y_max, res, iterations, opt, lyapunov)
 
 high = 1e22; low = 1e-8; %bounds for turbo break
 lambda = 0; %initial lyapunov exponent
@@ -19,7 +19,7 @@ for k = 1:iterations + 1
     
     % Fractal Generator
     z_prev = z;
-    z = 1.25 - z.^2;
+    z = fractalFunction(z);
     
     % Lyapunov Exponential
     if lyapunov
@@ -44,13 +44,13 @@ end
     axis image;
 
 %% Title and Labels
-titleText = sprintf('Julia Fractal (%d Iterations)', iterations);
+titleText = sprintf('%s | %d Iterations |', func2str(fractalFunction), iterations);
 if lyapunov == 1
-    titleText = [titleText, ' (Lyapunov Mode)'];
+    titleText = [titleText, ' Lyapunov'];
 elseif opt == 0
-    titleText = [titleText, ' (Normal Mode)'];
+    titleText = [titleText, ' Normal'];
 elseif opt == 1
-    titleText = [titleText, ' (Turbo Mode)'];
+    titleText = [titleText, ' Turbo Mode'];
 end
 title(titleText);
 

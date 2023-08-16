@@ -1,6 +1,8 @@
-% Set initial window size and position
+%% Set initial window size and fractal
 x_min = -2; x_max = 2;
 y_min = -2; y_max = 2;
+myfractalFunction = @(z) 1.25 - z.^2;
+
 res = 600; % Default resolution
 
 % Set step size and zoom factor
@@ -16,7 +18,7 @@ iterations = 100; % Default iteration count
 lyapunov = false; % Lyapunov Exponential
 
 % Generate initial plot
-juliafract(x_max, x_min, y_min, y_max, res, iterations, mode, lyapunov);
+juliafract(myfractalFunction,x_max, x_min, y_min, y_max, res, iterations, mode, lyapunov);
 
 % Key definitions
 while true
@@ -91,11 +93,10 @@ while true
         
         % Redraw the plot with the new window size and position
         tic
-        juliafract(x_max, x_min, y_min, y_max, res * resl, iterations, mode, lyapunov);
-        toc
+        juliafract(myfractalFunction,x_max, x_min, y_min, y_max, res * resl, iterations, mode, lyapunov);
+        elapsed_time = toc;
         
-        % Display step size and resolution
-        step_size
-        res * resl
+        %output
+        fprintf('Elapsed Time: %.4f seconds | Step Size: %.4f | Resolution: %d steps\n', elapsed_time, step_size, res * resl);
     end
 end
