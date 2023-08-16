@@ -18,8 +18,11 @@
     global iterations; %default iteration count
     iterations = 100;
 
+    global lyapunov; %Lyapunov Exponential
+    lyapunov = false;
+
 % Generate initial plot
-    juliafract(x_max,x_min,y_min,y_max,res,iterations,mode);
+    juliafract(x_max,x_min,y_min,y_max,res,iterations,mode,lyapunov);
 
 % Key definitions
 while true
@@ -78,9 +81,11 @@ while true
         elseif key == 'e'
             resl = 2*resl;
 
-        %Toggle high quality mode
+        %Toggle modes
         elseif key == 'h'
-            mode = ~mode; %toggle it
+            mode = ~mode; %toggle HQ mode
+        elseif key == 'l'
+            lyapunov = ~lyapunov;
         
         %Iterations
         elseif key == 'z'
@@ -92,11 +97,10 @@ while true
         
         % Redraw the plot with the new window size and position
         tic
-            juliafract(x_max,x_min,y_min,y_max,res*resl,iterations,mode);
+            juliafract(x_max,x_min,y_min,y_max,res*resl,iterations,mode,lyapunov);
         toc
 
             %step_size %display step size
             res*resl
-
     end
 end

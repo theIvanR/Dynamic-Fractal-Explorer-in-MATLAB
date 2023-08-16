@@ -1,36 +1,41 @@
-function juliafract(x_max,x_min,y_min,y_max,res,iterations,opt);
+function juliafract(x_max, x_min, y_min, y_max, res, iterations, opt, lyapunov)
 
-X = linspace(x_min,x_max,res);
-Y = linspace(y_min,y_max,res);
+high = 1e22; low = 1e-8; %bounds for turbo break
+lambda = 0; %initial lyapunov exponent
 
-[x,y] = meshgrid(X,Y);
-z=x+i.*y;
+X = linspace(x_min, x_max, res);
+Y = linspace(y_min, y_max, res);
+[x, y] = meshgrid(X, Y);
 
-%% Main Loop (exp)
-high = 1e22; low = 1e-8; %cutoff detectors
+z = x + 1i * y;
 
-%Fractal Generator
-    for k=1:iterations+1;
-        
-        %Turbo Mode
-        if opt 
-            %stability container
-            if any(abs(z(:)) > high) || all(abs(z(:)) < low)
-                break;
-            end
-        end
-
-        %Fractal Generator
-        z = 1.25 - z.^2;
+%% Fractal Generator
+for k = 1:iterations + 1
+    
+    % Turbo Mode (check first to break, skips one step!)
+    if opt && (any(abs(z(:)) > high) || all(abs(z(:)) < low)) && lyapunov == false
+        break;
     end
+    
+    % Fractal Generator
+    z_prev = z;
+    z = 1.25 - z.^2;
+    
+    % Lyapunov Exponential
+    if lyapunov
+        lambda = lambda + log(z - z_prev);
+    end
+end
 
-% Mapping function to compress values (z->t)
-    %t=real(z);
-    %t=imag(z);
+%% Mapping
+if lyapunov
+    lambda = abs(lambda / iterations);
+    t = lambda;
 
-    %t=exp(-abs(z)); %negative exponential
-    t=1./(abs(z)+1);
-    %t=2*atan(abs(z))/pi;
+else
+
+    t = 1.0 ./ (abs(z) + 1);
+end
 
 %% Plotting
     imagesc(X, Y, t);
@@ -38,18 +43,18 @@ high = 1e22; low = 1e-8; %cutoff detectors
     colorbar;
     axis image;
 
-%Title
-    titleText = sprintf('Julia Fractal (%d Iterations)', iterations);
+%% Title and Labels
+titleText = sprintf('Julia Fractal (%d Iterations)', iterations);
+if lyapunov == 1
+    titleText = [titleText, ' (Lyapunov Mode)'];
+elseif opt == 0
+    titleText = [titleText, ' (Normal Mode)'];
+elseif opt == 1
+    titleText = [titleText, ' (Turbo Mode)'];
+end
+title(titleText);
 
-    if opt == 0
-        titleText = [titleText, ' (Normal Mode)'];
-    elseif opt == 1
-        titleText = [titleText, ' (Turbo Mode)'];
-    end
-    title(titleText);
-
-%Label
-    xlabel(['X Axis (', num2str(res), ' steps)']);
-    ylabel(['Y Axis (', num2str(res), ' steps)']);
+xlabel(['X Axis (', num2str(res), ' steps)']);
+ylabel(['Y Axis (', num2str(res), ' steps)']);
 
 end
