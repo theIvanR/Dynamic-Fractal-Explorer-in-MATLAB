@@ -27,14 +27,14 @@ for k = 1:iterations + 1
     end
 end
 
-%% Mapping
+%% Mapping: (z->t on [0;1])
 if lyapunov
     lambda = abs(lambda / iterations);
     t = lambda;
 
 else
-
-    t = 1.0 ./ (abs(z) + 1);
+    %t=exp(-abs(z));
+    t = 1.0 ./ (abs(z) + 1); 
 end
 
 %% Plotting
