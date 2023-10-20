@@ -7,7 +7,15 @@ X = linspace(x_min, x_max, res);
 Y = linspace(y_min, y_max, res);
 [x, y] = meshgrid(X, Y);
 
-z = x + 1i * y;
+%% GPU Acceleration (to disable, redefine z without gpu's and no gather)
+% Transfer x and y data to the GPU
+x_gpu = gpuArray(x);
+y_gpu = gpuArray(y);
+
+z = x_gpu + 1i * y_gpu;
+
+% Transfer z to the GPU
+z = gpuArray(z);
 
 %% Fractal Generator
 for k = 1:iterations + 1
@@ -33,13 +41,17 @@ if lyapunov
     t = lambda;
 
 else
-    %t=exp(-abs(z));
-    t = 1.0 ./ (abs(z) + 1); 
+    %t = real(z);
+    %t = imag(z);
+    %t=abs(z);
+
+    t = gather(exp(-abs(z)));
+    %t = gather(1.0 ./ (abs(z) + 1)); 
 end
 
 %% Plotting
     imagesc(X, Y, t);
-    colormap jet;
+    colormap turbo;
     colorbar;
     axis image;
 
