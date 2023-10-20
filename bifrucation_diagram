@@ -1,0 +1,37 @@
+% Get user input for the iteration count for fractal
+transient = 1; %after which value to start plot
+steps = 1000; %spacial iteration count
+
+% Define the range of c values
+c_range = linspace(0, 1, steps);
+
+% Initialize arrays to store results
+final_values = zeros(length(c_range), iterations - transient + 1);
+c_values = c_range;
+
+% Iterate over the range of c values
+for i = 1:length(c_range)
+    c = c_range(i);
+    fractalFunction = @(z) c - (1 ./ z).^2; % Define the function with the current c value
+    path = orbitcode(fractalFunction, 0.1, 0.1, iterations, false); % Use initial values here
+    final_values(i, :) = path(transient:iterations);
+end
+
+% Plot the bifurcation diagram for the real part
+subplot(2, 1, 1);
+scatter(repmat(c_values, 1, iterations - transient + 1), real(final_values(:)), 1, '*');
+xlabel('Parameter c');
+ylabel('Real Part');
+title('Bifurcation Diagram - Real Part');
+ylim([-10, 10]); % Set y-axis limits
+
+% Plot the bifurcation diagram for the imaginary part
+subplot(2, 1, 2);
+scatter(repmat(c_values, 1, iterations - transient + 1), imag(final_values(:)), 1, '*');
+xlabel('Parameter c');
+ylabel('Imaginary Part');
+title('Bifurcation Diagram - Imaginary Part');
+ylim([-10, 10]); % Set y-axis limits
+
+% Adjust spacing between subplots
+sgtitle('Bifurcation Diagram for Inverse Quadratic Function');
