@@ -1,108 +1,73 @@
-%% Set initial window size and fractal
-x_min = -2; x_max = 2;
-y_min = -2; y_max = 2;
-myfractalFunction = @(z) 0.9 - z.^-2;
-    %1.25 - z.^-2; add + 0.1*z term to remove hole
-    %0.9 - z.^-2;
-    %@(z) 1.25 - z.^2;
-    %@(z) 0.9 - z.^-2;
-    %also wild with 0.5 - z.^2, noise with 0.9 or 0.8
-    %wild fractal with negative square! (1.25 - z.^-2)
+function juliafract(fractalFunction, x_max, x_min, y_min, y_max, res, iterations, opt, lyapunov)
 
-res = 600; % Default resolution
+high = 1e22; low = 1e-8; %bounds for turbo break
+lambda = 0; %initial lyapunov exponent
 
-% Set step size and zoom factor
-global step_size;
-step_size = 0.1;
-zoom_factor = 0.9;
+X = linspace(x_min, x_max, res);
+Y = linspace(y_min, y_max, res);
+[x, y] = meshgrid(X, Y);
 
-% Options
-global mode resl iterations lyapunov;
-mode = false;   % Fast mode off
-resl = 1;       % Resolution multiplier
-iterations = 100; % Default iteration count
-lyapunov = false; % Lyapunov Exponential
+z = x + 1i * y;
+%% GPU Acceleration (to disable, redefine z without gpu's and no gather)
+% Transfer x and y data to the GPU
+x_gpu = gpuArray(x);
+y_gpu = gpuArray(y);
+z = x_gpu + 1i * y_gpu;
+% Transfer z to the GPU
+z = gpuArray(z);
 
-% Generate initial plot
-juliafract(myfractalFunction,x_max, x_min, y_min, y_max, res, iterations, mode, lyapunov);
+%% Fractal Generator
+for k = 1:iterations + 1
 
-% Key definitions
-while true
-    % Wait for user input
-    key = waitforbuttonpress;
-    if key == 1
-        % Get current axis limits
-        xlims = get(gca, 'xlim');
-        ylims = get(gca, 'ylim');
-        
-        % Get the key pressed
-        key = get(gcf, 'CurrentCharacter');
-        
-        % Calculate current zoom level
-        x_range = x_max - x_min;
-        y_range = y_max - y_min;
-        zoom_level = sqrt(x_range * y_range);
-        
-        % Calculate panning step size based on zoom level
-        pan_step_size = step_size / zoom_level;
-        
-        % Pan the plot
-        if key == 's' % Down arrow
-            y_min = y_min + pan_step_size * zoom_level;
-            y_max = y_max + pan_step_size * zoom_level;
-        
-        elseif key == 'w' % Up arrow
-            y_min = y_min - pan_step_size * zoom_level;
-            y_max = y_max - pan_step_size * zoom_level;
-        
-        elseif key == 'd' % Right arrow
-            x_min = x_min + pan_step_size * zoom_level;
-            x_max = x_max + pan_step_size * zoom_level;
-        
-        elseif key == 'a' % Left arrow
-            x_min = x_min - pan_step_size * zoom_level;
-            x_max = x_max - pan_step_size * zoom_level;
-        
-        elseif key == '+' || key == '='  % Plus key (zoom in)
-            x_min = x_min - (zoom_factor - 1) / 2 * x_range;
-            x_max = x_max + (zoom_factor - 1) / 2 * x_range;
-            y_min = y_min - (zoom_factor - 1) / 2 * y_range;
-            y_max = y_max + (zoom_factor - 1) / 2 * y_range;
-            step_size = step_size * zoom_factor;
-        
-        elseif key == '-' % Minus key (zoom out)
-            x_min = x_min + (zoom_factor - 1) / 2 * x_range;
-            x_max = x_max - (zoom_factor - 1) / 2 * x_range;
-            y_min = y_min + (zoom_factor - 1) / 2 * y_range;
-            y_max = y_max - (zoom_factor - 1) / 2 * y_range;
-            step_size = step_size / zoom_factor;
-        
-        % Toggle Resolution
-        elseif key == 'q'
-            resl = 0.5 * resl;
-        elseif key == 'e'
-            resl = 2 * resl;
-
-        % Toggle modes
-        elseif key == 'h'
-            mode = ~mode; % Toggle HQ mode
-        elseif key == 'l'
-            lyapunov = ~lyapunov;
-        
-        % Iterations
-        elseif key == 'z'
-            iterations = floor(2 * iterations);
-        elseif key == 'x'
-            iterations = floor(iterations / 2);
-
-        end
-        
-        % Redraw the plot with the new window size and position
-        tic
-        juliafract(myfractalFunction,x_max, x_min, y_min, y_max, res * resl, iterations, mode, lyapunov);
-        elapsed_time = toc;
-        
-        %output
-        fprintf('Elapsed Time: %.4f seconds | Step Size: %.4f | Resolution: %d steps\n', elapsed_time, step_size, res * resl);
+    % Turbo Mode (check first to break, skips one step!)
+    if opt && (any(abs(z(:)) > high) || all(abs(z(:)) < low)) && lyapunov == false
+        break;
     end
+
+    % Fractal Generator
+    z_prev = z;
+    z = fractalFunction(z);
+
+    % Lyapunov Exponential
+    if lyapunov
+        lambda = lambda + log(z - z_prev);
+    end
+end
+
+%% Mapping: (z->t on [0;1])
+if lyapunov
+    lambda = abs(lambda / iterations);
+    t = lambda;
+
+else
+    %t=exp(-abs(z));
+    %t = 1.0 ./ (abs(z) + 1); 
+    %t = real(z);
+    %t = imag(z);
+    %t=abs(z);
+    t = gather(exp(-abs(z)));
+    %t = gather(1.0 ./ (abs(z) + 1)); 
+end
+
+%% Plotting
+    imagesc(X, Y, t);
+    colormap jet;
+    colormap turbo;
+    colorbar;
+    axis image;
+
+%% Title and Labels
+titleText = sprintf('%s | %d Iterations |', func2str(fractalFunction), iterations);
+if lyapunov == 1
+    titleText = [titleText, ' Lyapunov'];
+elseif opt == 0
+    titleText = [titleText, ' Normal'];
+elseif opt == 1
+    titleText = [titleText, ' Turbo Mode'];
+end
+title(titleText);
+
+xlabel(['X Axis (', num2str(res), ' steps)']);
+ylabel(['Y Axis (', num2str(res), ' steps)']);
+
 end
