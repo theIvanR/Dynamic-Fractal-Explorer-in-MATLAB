@@ -1,7 +1,13 @@
 %% Set initial window size and fractal
 x_min = -2; x_max = 2;
 y_min = -2; y_max = 2;
-myfractalFunction = @(z) 1.25 - z.^2;
+myfractalFunction = @(z) 0.9 - z.^-2;
+    %1.25 - z.^-2; add + 0.1*z term to remove hole
+    %0.9 - z.^-2;
+    %@(z) 1.25 - z.^2;
+    %@(z) 0.9 - z.^-2;
+    %also wild with 0.5 - z.^2, noise with 0.9 or 0.8
+    %wild fractal with negative square! (1.25 - z.^-2)
 
 res = 600; % Default resolution
 
